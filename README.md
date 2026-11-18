@@ -2,19 +2,21 @@
 
 [![CI](https://github.com/aiah123/grid-shell/actions/workflows/ci.yml/badge.svg)](https://github.com/aiah123/grid-shell/actions/workflows/ci.yml)
 
-A terminal for macOS and Linux that shows all your sessions at once, laid out as an even grid.
+Grid Shell is a terminal for macOS and Linux that keeps all your shell sessions in view at once. Sessions share the window as an even grid, so you can watch a dev server, logs and tests side by side, then step into any one of them when you need to focus.
 
-## Status
-- ✅ M0: Electron + xterm.js + node-pty scaffold
-- ✅ M1: even grid layout, new/close session, click to activate, PTY resizing
-- ✅ M2: renaming sessions, keyboard navigation
-- ✅ M3: focus mode (double-click to enlarge, click outside to exit)
-- ✅ M4: zsh/bash shell integration (current directory, commands, exit codes)
-- ✅ M5: Context panel (files opened per session, recent commands, file preview)
-- ✅ M6: config file with live reload, themes, settings screen, remappable shortcuts
-- ✅ M7: session restore, quit confirmation, find, clickable links, syntax-highlighted previews
+![Four sessions side by side in the grid](docs/screenshots/grid.png)
 
-See [PLAN.md](PLAN.md) for the full plan.
+Double-click a session (or press Cmd+Enter / Ctrl+Shift+Enter) to focus on it. It fills most of the window, next to a Context panel showing its folder, the files you've opened in it and its recent commands. Click anywhere outside it to go back to the grid.
+
+![Focus mode: one session enlarged, with its Context panel](docs/screenshots/focus.png)
+
+**What it does:**
+- **Every session in view:** sessions split the window evenly. Drag the borders between them to resize; double-click a border to make them equal again.
+- **Named sessions:** double-click a title bar to rename a session. Move between sessions with a click or the keyboard.
+- **Focus mode and context:** see the files opened in a session, preview them with syntax highlighting, and re-run recent commands.
+- **Your own shell:** bash, zsh or any other shell, with its history, tab completion and settings.
+- **Picks up where you left off:** session names, folders and context come back when you reopen Grid Shell.
+- **Make it yours:** 9 themes (or import iTerm2 themes), fonts, and every shortcut can be changed.
 
 ## Running from source
 Grid Shell isn't packaged as an app; run it from the code. It works on macOS and Linux.
@@ -45,6 +47,7 @@ npm run dev        # run with hot reload
 npm test           # unit tests
 npm run typecheck
 npm run build && npm run test:e2e:all   # all end-to-end suites (use xvfb-run -a on headless Linux)
+npm run build && npm run screenshots    # regenerate the README screenshots
 ```
 
 CI runs on Linux and macOS for each push and pull request: a dependency audit (it fails on high or critical issues in what ships in the app, and only warns about build and test tools), the type check, the unit tests and every end-to-end suite.
@@ -67,6 +70,7 @@ You can change any of these in the settings screen or in `config.toml`.
 
 Mouse:
 - Click a tile to make it active. Only the active tile receives your typing.
+- Drag the border between two sessions to resize them. Each row is sized on its own; drag the border between rows to change their heights. Double-click a border to make the sizes equal again. Adding or closing a session resets the sizes.
 - Double-click a title bar to rename that session. Enter saves, Esc cancels.
 - Double-click a terminal to enter focus mode. Clicking anywhere outside the focused session exits focus mode; it doesn't change the active session.
 

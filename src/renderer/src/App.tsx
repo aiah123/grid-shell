@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { AppCommand, SessionContext } from '../../shared/api'
 import type { ResolvedConfig } from '../../shared/config'
-import { computeLayout, Direction, neighbor } from './layout'
+import { computeLayout, Direction, equalSizes, neighbor, shapeKey, Sizes, tileRects } from './layout'
+import { Resizers } from './Resizers'
 import { SessionTile, TileSettings } from './SessionTile'
 import { ContextPanel } from './ContextPanel'
 import { FilePreview } from './FilePreview'
@@ -39,11 +40,14 @@ export function App() {
   // Bumped to hand keyboard focus back to the active terminal.
   const [refocus, setRefocus] = useState(0)
   const [findingId, setFindingId] = useState<number | null>(null)
+  /** Dragged sizes, kept only while the grid keeps the same shape (tiles per row). */
+  const [customSizes, setCustomSizes] = useState<{ key: string; sizes: Sizes } | null>(null)
+  const innerRef = useRef<HTMLDivElement>(null)
   const counter = useRef(0)
 
   // Latest state for IPC callbacks registered once.
-  const state = useRef({ sessions, activeId, focusedId, settingsOpen, rc })
-  state.current = { sessions, activeId, focusedId, settingsOpen, rc }
+  const state = useRef({ sessions, activeId, focusedId, settingsOpen, rc, customSizes })
+  state.current = { sessions, activeId, focusedId, settingsOpen, rc, customSizes }
 
   const showToast = useCallback((toast: Toast) => {
     setToasts((t) => [...t.filter((x) => x.id !== toast.id), toast])
@@ -177,7 +181,9 @@ export function App() {
       }
       let target = idx
       if (cmd.startsWith('nav-')) {
-        target = neighbor(computeLayout(list.length), idx, cmd.slice(4) as Direction)
+        const l = computeLayout(list.length)
+        const custom = state.current.customSizes
+        target = neighbor(l, idx, cmd.slice(4) as Direction, custom?.key === shapeKey(l) ? custom.sizes : equalSizes(l))
       } else if (cmd.startsWith('select-')) {
         target = Number(cmd.slice(7)) - 1
         if (target >= list.length) return
@@ -240,19 +246,19 @@ export function App() {
   if (!rc || !baseSettings) return null
 
   const layout = computeLayout(sessions.length)
+  const layoutKey = shapeKey(layout)
+  const sizes = customSizes?.key === layoutKey ? customSizes.sizes : equalSizes(layout)
+  const rects = tileRects(layout, sizes)
   const focused = sessions.find((s) => s.id === focusedId) ?? null
 
   return (
     <>
-      <div
-        className={`grid${focused ? ' has-focus' : ''}`}
-        style={{
-          gridTemplateColumns: `repeat(${layout.tracks}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${Math.max(layout.rows, 1)}, minmax(0, 1fr))`
-        }}
-      >
+      <div className={`grid${focused ? ' has-focus' : ''}`}>
+        <div className="grid-inner" ref={innerRef}>
         {sessions.map((s, i) => {
-          const p = layout.placements[i]
+          const r = rects[i]
+          const g = 'var(--gap)'
+          const R = layout.rows
           const delta = zoom[s.id] ?? 0
           return (
             <SessionTile
@@ -281,10 +287,22 @@ export function App() {
               }}
               onRename={(name) => rename(s.id, name)}
               onCancelRename={() => setRenamingId(null)}
-              style={{ gridRow: p.row, gridColumn: `${p.colStart} / span ${p.colSpan}` }}
+              // A focused tile is placed by CSS (fixed, enlarged); others by their size fractions.
+              style={
+                s.id === focusedId
+                  ? {}
+                  : {
+                      left: `calc((100% - ${r.colsInRow - 1} * ${g}) * ${r.x} + ${r.col} * ${g})`,
+                      width: `calc((100% - ${r.colsInRow - 1} * ${g}) * ${r.w})`,
+                      top: `calc((100% - ${R - 1} * ${g}) * ${r.y} + ${r.row} * ${g})`,
+                      height: `calc((100% - ${R - 1} * ${g}) * ${r.h})`
+                    }
+              }
             />
           )
         })}
+        <Resizers layout={layout} sizes={sizes} container={innerRef} onChange={(next) => setCustomSizes({ key: layoutKey, sizes: next })} />
+        </div>
       </div>
       {focused && (
         <>

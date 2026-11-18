@@ -4,7 +4,7 @@ const { spawnSync } = require('child_process');
 const path = require('path');
 
 const suites = [
-  ['shell.cjs'], ['smoke.cjs'], ['config.cjs'], ['restore.cjs'],
+  ['shell.cjs'], ['smoke.cjs'], ['resize.cjs'], ['config.cjs'], ['restore.cjs'],
   ['context.cjs', 'bash'], ['context.cjs', 'zsh'],
   ['security.cjs', 'bash'], ['security.cjs', 'zsh']
 ];

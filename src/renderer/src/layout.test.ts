@@ -36,7 +36,7 @@ describe('computeLayout', () => {
   })
 })
 
-import { neighbor } from './layout'
+import { equalSizes, moveBoundary, neighbor, shapeKey, tileRects } from './layout'
 
 describe('neighbor', () => {
   it('moves within a row and stops at edges', () => {
@@ -65,5 +65,40 @@ describe('neighbor', () => {
     expect(neighbor(l5, 2, 'down')).toBe(4)
     expect(neighbor(l5, 3, 'up')).toBe(0)
     expect(neighbor(l5, 4, 'up')).toBe(2)
+  })
+})
+
+describe('sizes', () => {
+  it('starts equal, per row', () => {
+    const l = computeLayout(5) // 3 + 2
+    expect(shapeKey(l)).toBe('3,2')
+    const s = equalSizes(l)
+    expect(s.rows).toEqual([0.5, 0.5])
+    expect(s.cols[0]).toHaveLength(3)
+    expect(s.cols[1]).toEqual([0.5, 0.5])
+  })
+
+  it('moves one boundary and clamps to the minimum', () => {
+    const close = (a: number[], b: number[]) => a.forEach((x, i) => expect(x).toBeCloseTo(b[i]))
+    close(moveBoundary([0.5, 0.5], 0, 0.2, 0.1), [0.7, 0.3])
+    close(moveBoundary([0.25, 0.25, 0.5], 1, 0.4, 0.1), [0.25, 0.65, 0.1])
+    close(moveBoundary([0.5, 0.5], 0, -1, 0.1), [0.1, 0.9])
+    expect(moveBoundary([0.5, 0.5], 1, 0.1, 0.1)).toEqual([0.5, 0.5]) // no boundary after the last item
+    const sum = moveBoundary([0.2, 0.3, 0.5], 1, 0.13, 0.05).reduce((a, b) => a + b)
+    expect(sum).toBeCloseTo(1)
+  })
+
+  it('places tiles from the fractions', () => {
+    const l = computeLayout(3) // 2 + 1
+    const rects = tileRects(l, { rows: [0.7, 0.3], cols: [[0.25, 0.75], [1]] })
+    expect(rects[1]).toMatchObject({ row: 0, col: 1, x: 0.25, w: 0.75, y: 0, h: 0.7, colsInRow: 2 })
+    expect(rects[2]).toMatchObject({ row: 1, col: 0, x: 0, w: 1, y: 0.7, h: 0.3 })
+  })
+
+  it('navigates up/down by the resized widths', () => {
+    const l = computeLayout(4) // 2 + 2
+    const sizes = { rows: [0.5, 0.5], cols: [[0.8, 0.2], [0.5, 0.5]] }
+    expect(neighbor(l, 3, 'up', sizes)).toBe(0) // centre of tile 3 (0.75) is under the wide tile 0
+    expect(neighbor(l, 3, 'up')).toBe(1) // with equal sizes it's tile 1
   })
 })

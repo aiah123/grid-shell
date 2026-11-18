@@ -34,11 +34,36 @@ html, body, #root {
 button { font: inherit; color: inherit; }
 
 .grid {
-  display: grid;
-  gap: var(--gap);
-  padding: var(--gap);
+  position: relative;
   height: 100%;
 }
+/* Tiles are placed absolutely inside this, from their size fractions. */
+.grid-inner {
+  position: absolute;
+  inset: var(--gap);
+}
+
+/* ---- Resizing borders ---- */
+.resizer {
+  position: absolute;
+  z-index: 4;
+  touch-action: none;
+}
+.resizer.col { width: 10px; cursor: col-resize; }
+.resizer.row { height: 10px; cursor: row-resize; }
+.resizer::after {
+  content: '';
+  position: absolute;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 120ms;
+}
+.resizer.col::after { left: 4px; width: 2px; top: 6px; bottom: 6px; }
+.resizer.row::after { top: 4px; height: 2px; left: 6px; right: 6px; }
+.resizer:hover::after, body.resizing-col .resizer.col:active::after, body.resizing-row .resizer.row:active::after { opacity: 0.8; }
+body.resizing-col, body.resizing-col * { cursor: col-resize !important; user-select: none; }
+body.resizing-row, body.resizing-row * { cursor: row-resize !important; user-select: none; }
 
 /* ---- Tiles ---- */
 .tile {
@@ -51,7 +76,7 @@ button { font: inherit; color: inherit; }
   border-radius: 6px;
   overflow: hidden;
 }
-.tile { position: relative; }
+.tile { position: absolute; }
 .tile.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 
 .title {
