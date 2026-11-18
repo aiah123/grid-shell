@@ -1,7 +1,7 @@
 import type { AppCommand } from './commands'
 import type { ResolvedConfig } from './config'
 
-/** API exposed by the preload script on `window.gridterm`. */
+/** API exposed by the preload script on `window.gridShell`. */
 export interface SessionInfo {
   id: number
   shell: string
@@ -40,7 +40,7 @@ export type FileReadResult =
   | { ok: true; text: string; truncated: boolean; size: number }
   | { ok: false; error: string }
 
-export interface GridtermApi {
+export interface GridShellApi {
   platform: NodeJS.Platform
   /** `restoreIndex` picks a session saved at the last quit (its cwd and context). */
   createSession(opts?: { cols?: number; rows?: number; restoreIndex?: number }): Promise<SessionInfo>

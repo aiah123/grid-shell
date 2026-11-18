@@ -51,13 +51,13 @@ const sol = {
 const solAnsi: Ansi = [sol.base02, sol.red, sol.green, sol.yellow, sol.blue, sol.magenta, sol.cyan, sol.base2,
   sol.base03, sol.orange, sol.base01, sol.base00, sol.base0, sol.violet, sol.base1, sol.base3]
 
-export const DEFAULT_THEME = 'Gridterm Dark'
+export const DEFAULT_THEME = 'Grid Shell Dark'
 
 export const BUILTIN_THEMES: Record<string, ThemeColors> = {
-  'Gridterm Dark': theme({ bg: '#1e1e1e', fg: '#d4d4d4', selection: '#264f78', accent: '#3b8eea' },
+  'Grid Shell Dark': theme({ bg: '#1e1e1e', fg: '#d4d4d4', selection: '#264f78', accent: '#3b8eea' },
     ['#000000', '#cd3131', '#0dbc79', '#e5e510', '#2472c8', '#bc3fbc', '#11a8cd', '#e5e5e5',
      '#666666', '#f14c4c', '#23d18b', '#f5f543', '#3b8eea', '#d670d6', '#29b8db', '#ffffff']),
-  'Gridterm Light': theme({ bg: '#ffffff', fg: '#333333', selection: '#add6ff', accent: '#0066bf' },
+  'Grid Shell Light': theme({ bg: '#ffffff', fg: '#333333', selection: '#add6ff', accent: '#0066bf' },
     ['#000000', '#cd3131', '#00bc00', '#949800', '#0451a5', '#bc05bc', '#0598bc', '#555555',
      '#666666', '#cd3131', '#14ce14', '#b5ba00', '#0451a5', '#bc05bc', '#0598bc', '#a5a5a5']),
   'Solarized Dark': theme({ bg: sol.base03, fg: sol.base0, cursor: sol.base1, selection: sol.base02, accent: sol.blue }, solAnsi),

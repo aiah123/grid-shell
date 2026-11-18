@@ -22,7 +22,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + `[${shellN
   const app = await _electron.launch({
     args: [path.join(dir, 'out/main/index.js'), '--no-sandbox'], cwd: dir,
     executablePath: require(path.join(dir, 'node_modules/electron')),
-    env: { ...process.env, SHELL: shellPath, GRIDTERM_CONFIG_DIR: prepareConfigDir() }
+    env: { ...process.env, SHELL: shellPath, GRID_SHELL_CONFIG_DIR: prepareConfigDir() }
   });
   const w = await app.firstWindow();
   page = w;

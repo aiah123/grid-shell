@@ -1,4 +1,4 @@
-# Gridterm zsh hooks.
+# Grid Shell zsh hooks.
 [[ -n $_gt_installed || -z ${_gt_nonce-} ]] && return
 typeset -g _gt_installed=1 _gt_ran=0
 

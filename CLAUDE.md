@@ -1,4 +1,4 @@
-# Gridterm: notes for Claude
+# Grid Shell: notes for Claude
 
 ## Git commits
 - Never put the owner's personal email address in commits: not in the

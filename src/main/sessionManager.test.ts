@@ -12,7 +12,7 @@ describe('shell integration authentication', () => {
   it('rejects malformed terminal output without throwing and accepts only the session nonce', () => {
     const manager = new SessionManager({ onData() {}, onExit() {} }, '/integration', () => ({ program: '/bin/bash', integration: true }))
     const { id } = manager.create()
-    const nonce = vi.mocked(pty.spawn).mock.calls.at(-1)![2]!.env!.GRIDTERM_NONCE!
+    const nonce = vi.mocked(pty.spawn).mock.calls.at(-1)![2]!.env!.GRID_SHELL_NONCE!
     expect(manager.verifyNonce(id, nonce)).toBe(true)
     expect(manager.verifyNonce(id + 1, nonce)).toBe(false)
     for (const bad of ['é'.repeat(32), '😀'.repeat(16), 'g'.repeat(32), 'a'.repeat(31), nonce + '\n', null, 123]) {

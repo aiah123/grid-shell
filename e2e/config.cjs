@@ -15,7 +15,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + name); if 
   const app = await _electron.launch({
     args: [path.join(dir, 'out/main/index.js'), '--no-sandbox'], cwd: dir,
     executablePath: require(path.join(dir, 'node_modules/electron')),
-    env: { ...process.env, GRIDTERM_CONFIG_DIR: cfgDir, SHELL: '/bin/bash' }
+    env: { ...process.env, GRID_SHELL_CONFIG_DIR: cfgDir, SHELL: '/bin/bash' }
   });
   const w = await app.firstWindow();
   const key = async (accel) => {
@@ -30,7 +30,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + name); if 
   const write = async (text) => { fs.writeFileSync(cfgFile, withTestKeys(text)); await w.waitForTimeout(700); };
 
   await w.waitForSelector('.tile'); await w.waitForTimeout(1200);
-  ok('default config file created with header', fs.readFileSync(cfgFile, 'utf8').startsWith('# Gridterm settings'));
+  ok('default config file created with header', fs.readFileSync(cfgFile, 'utf8').startsWith('# Grid Shell settings'));
   ok('default theme applied', await cssVar('--term-bg') === '#1e1e1e');
 
   // ---- live reload from the file ----

@@ -35,7 +35,7 @@ const CLOSE_FDS_SCRIPT =
 
 function launcher(shell: string, args: string[]): [string, string[]] {
   if (process.platform === 'linux' && fs.existsSync('/bin/bash') && fs.existsSync('/proc/self/fd')) {
-    return ['/bin/bash', ['-c', CLOSE_FDS_SCRIPT, 'gridterm-launch', shell, ...args]]
+    return ['/bin/bash', ['-c', CLOSE_FDS_SCRIPT, 'grid-shell-launch', shell, ...args]]
   }
   return [shell, args]
 }
@@ -58,19 +58,19 @@ export class SessionManager {
     return [...this.sessions.values()].map((s) => ({ id: s.id, pid: s.proc.pid }))
   }
 
-  /** Arguments and environment that load Gridterm's hooks into zsh/bash. */
+  /** Arguments and environment that load Grid Shell's hooks into zsh/bash. */
   private shellLaunch(shell: string, env: Record<string, string>): string[] {
     const name = path.basename(shell)
-    if (env.GRIDTERM_NO_SHELL_INTEGRATION || !this.shellSettings().integration) return ['-l']
+    if (env.GRID_SHELL_NO_SHELL_INTEGRATION || !this.shellSettings().integration) return ['-l']
     if (name === 'zsh') {
-      if (env.ZDOTDIR) env.GRIDTERM_USER_ZDOTDIR = env.ZDOTDIR
-      else delete env.GRIDTERM_USER_ZDOTDIR
+      if (env.ZDOTDIR) env.GRID_SHELL_USER_ZDOTDIR = env.ZDOTDIR
+      else delete env.GRID_SHELL_USER_ZDOTDIR
       env.ZDOTDIR = path.join(this.integrationDir, 'zsh')
       return ['-l']
     }
     if (name === 'bash') {
-      env.GRIDTERM_BASH_LOGIN = '1'
-      return ['--rcfile', path.join(this.integrationDir, 'bash', 'gridterm.bash'), '-i']
+      env.GRID_SHELL_BASH_LOGIN = '1'
+      return ['--rcfile', path.join(this.integrationDir, 'bash', 'grid-shell.bash'), '-i']
     }
     return ['-l']
   }
@@ -87,11 +87,11 @@ export class SessionManager {
     const env = { ...process.env } as Record<string, string>
     env.TERM = 'xterm-256color'
     env.COLORTERM = 'truecolor'
-    env.TERM_PROGRAM = 'gridterm'
+    env.TERM_PROGRAM = 'grid-shell'
     delete env.ELECTRON_RUN_AS_NODE
     // The shell scripts read this once and unset it, so child processes don't inherit it.
     const nonce = randomBytes(16).toString('hex')
-    env.GRIDTERM_NONCE = nonce
+    env.GRID_SHELL_NONCE = nonce
 
     const [file, args] = launcher(shell, this.shellLaunch(shell, env))
     const proc = pty.spawn(file, args, {

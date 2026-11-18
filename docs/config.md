@@ -1,10 +1,12 @@
 # Configuration
 
-Gridterm reads `~/.config/gridterm/config.toml`, or `$XDG_CONFIG_HOME/gridterm/config.toml` if `XDG_CONFIG_HOME` is set. Set `GRIDTERM_CONFIG_DIR` to use a different folder.
+Grid Shell reads `~/.config/grid-shell/config.toml`, or `$XDG_CONFIG_HOME/grid-shell/config.toml` if `XDG_CONFIG_HOME` is set. Set `GRID_SHELL_CONFIG_DIR` to use a different folder.
 
 - **Live reload:** changes apply as soon as you save the file. No restart is needed.
 - **Settings screen:** open it with Cmd+, (macOS) or Ctrl+Shift+, (Linux). It edits the same file. It keeps your values but rewrites the file, so comments other than the header are removed.
-- **Mistakes don't stop the app:** an invalid value falls back to its default, and Gridterm shows a warning that names the setting. If the file has a syntax error, Gridterm keeps the last working settings and shows the line number.
+- **Mistakes don't stop the app:** an invalid value falls back to its default, and Grid Shell shows a warning that names the setting. If the file has a syntax error, Grid Shell keeps the last working settings and shows the line number.
+
+**Upgrading from Gridterm:** the project used to be called Gridterm. On first launch, Grid Shell copies `config.toml`, `state.json` and `themes/` from `~/.config/gridterm` into the new folder, unless the new folder already has them. The old folder is left untouched, so you can delete it afterwards. The old built-in theme names `Gridterm Dark` and `Gridterm Light` still work. Environment variables are now named `GRID_SHELL_…` (for example `GRID_SHELL_CONFIG_DIR`).
 
 Only set what you want to change. Everything has a default.
 
@@ -51,7 +53,7 @@ select-9 = false              # turn a shortcut off
 
 | Setting | Default | Allowed |
 |---|---|---|
-| `theme` | `"Gridterm Dark"` | A built-in, imported or custom theme name |
+| `theme` | `"Grid Shell Dark"` | A built-in, imported or custom theme name |
 | `font.family` | `Menlo, "SF Mono", "DejaVu Sans Mono", "Liberation Mono", monospace` | CSS font list |
 | `font.size` | `13` | 6–72 |
 | `font.lineHeight` | `1.0` | 0.8–3 |
@@ -68,21 +70,21 @@ select-9 = false              # turn a shortcut off
 | `shell.integration` | `true` | Directory, command and file tracking for zsh and bash. Applies to new sessions. |
 | `app.restoreSessions` | `true` | Reopen the last sessions (names, folders, context) and the window size on launch. Saved in `state.json` next to `config.toml`. |
 | `app.confirmQuit` | `true` | Ask before quitting while a command is running |
-| `app.recordCommands` | `true` | Show and persist recent commands. Turning this off clears Gridterm's recorded commands and prevents restoring them; directory and file tracking remain available. |
+| `app.recordCommands` | `true` | Show and persist recent commands. Turning this off clears Grid Shell's recorded commands and prevents restoring them; directory and file tracking remain available. |
 
-Gridterm keeps `state.json` private (`0600`) inside its private configuration
+Grid Shell keeps `state.json` private (`0600`) inside its private configuration
 directory (`0700`), and tightens permissions on state from earlier versions.
 Bash commands excluded by history settings (including `ignorespace`, `HISTIGNORE`,
 and disabled history) are not recorded. Leading-space zsh commands and commands
 run with `HISTSIZE=0` are not recorded. Use `app.recordCommands = false` for a
-complete opt-out from Gridterm command recording. This does not erase shell
+complete opt-out from Grid Shell command recording. This does not erase shell
 history, terminal scrollback, backups, or state copies saved by earlier versions.
 
 ## Themes
 
 Built-in themes:
-- Gridterm Dark
-- Gridterm Light
+- Grid Shell Dark
+- Grid Shell Light
 - Solarized Dark
 - Solarized Light
 - Dracula
@@ -93,7 +95,7 @@ Built-in themes:
 
 You can add your own in three ways:
 
-- **Inline in config.toml.** Anything you leave out comes from Gridterm Dark.
+- **Inline in config.toml.** Anything you leave out comes from Grid Shell Dark.
   ```toml
   theme = "Mine"
   [themes.Mine]
@@ -102,8 +104,8 @@ You can add your own in three ways:
   accent = "#ff9e3b"   # active border and buttons
   red = "#ff5f59"
   ```
-- **Import from the settings screen.** Use **Import theme…** to pick an iTerm2 `.itermcolors` file or a Gridterm `.json` file. It's copied into `~/.config/gridterm/themes/`.
-- **Add a JSON file yourself.** Put `<name>.json` in `~/.config/gridterm/themes/`, using the same keys as an inline theme.
+- **Import from the settings screen.** Use **Import theme…** to pick an iTerm2 `.itermcolors` file or a Grid Shell `.json` file. It's copied into `~/.config/grid-shell/themes/`.
+- **Add a JSON file yourself.** Put `<name>.json` in `~/.config/grid-shell/themes/`, using the same keys as an inline theme.
 
 Colour keys:
 - `background`, `foreground`, `cursor`, `cursorAccent`, `selectionBackground`, `accent`

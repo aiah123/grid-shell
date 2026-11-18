@@ -17,7 +17,7 @@ const isMac = process.platform === 'darwin'
 let win: BrowserWindow | null = null
 
 // ---- Trust boundary ----
-// Only Gridterm's own page may use the internal API (it can start shells and
+// Only Grid Shell's own page may use the internal API (it can start shells and
 // type into them), so: never navigate away from it, never open other windows,
 // and ignore IPC from anything else.
 
@@ -45,7 +45,7 @@ function requireSchema(channel: string): void {
   if (!IPC_SCHEMA[channel]) throw new Error(`IPC channel "${channel}" has no schema`)
 }
 
-/** ipcMain.on that ignores messages not sent by Gridterm's own page or with unexpected arguments. */
+/** ipcMain.on that ignores messages not sent by Grid Shell's own page or with unexpected arguments. */
 function on(channel: string, listener: (event: IpcMainEvent, ...args: any[]) => void): void {
   requireSchema(channel)
   ipcMain.on(channel, (event, ...args) => {
@@ -53,11 +53,11 @@ function on(channel: string, listener: (event: IpcMainEvent, ...args: any[]) => 
   })
 }
 
-/** ipcMain.handle that rejects calls not made by Gridterm's own page or with unexpected arguments. */
+/** ipcMain.handle that rejects calls not made by Grid Shell's own page or with unexpected arguments. */
 function handle(channel: string, listener: (event: IpcMainInvokeEvent, ...args: any[]) => unknown): void {
   requireSchema(channel)
   ipcMain.handle(channel, (event, ...args) => {
-    if (!fromApp(event)) throw new Error('Rejected: request did not come from Gridterm.')
+    if (!fromApp(event)) throw new Error('Rejected: request did not come from Grid Shell.')
     if (!validArgs(channel, args)) throw new Error(`Rejected: invalid arguments for ${channel}.`)
     return listener(event, ...args)
   })
@@ -270,7 +270,7 @@ function createWindow(): void {
     ...(bounds ? { x: bounds.x, y: bounds.y } : {}),
     backgroundColor: config.get().themeColors.background,
     autoHideMenuBar: true,
-    title: 'Gridterm',
+    title: 'Grid Shell',
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
       // These are Electron's defaults; set explicitly so they can't regress.

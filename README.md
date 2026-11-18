@@ -1,6 +1,6 @@
-# Gridterm
+# Grid Shell
 
-[![CI](https://github.com/aiah123/gridterm/actions/workflows/ci.yml/badge.svg)](https://github.com/aiah123/gridterm/actions/workflows/ci.yml)
+[![CI](https://github.com/aiah123/grid-shell/actions/workflows/ci.yml/badge.svg)](https://github.com/aiah123/grid-shell/actions/workflows/ci.yml)
 
 A terminal for macOS and Linux that shows all your sessions at once, laid out as an even grid.
 
@@ -17,7 +17,7 @@ A terminal for macOS and Linux that shows all your sessions at once, laid out as
 See [PLAN.md](PLAN.md) for the full plan.
 
 ## Running from source
-Gridterm isn't packaged as an app; run it from the code. It works on macOS and Linux.
+Grid Shell isn't packaged as an app; run it from the code. It works on macOS and Linux.
 
 **You need:**
 - [Node.js](https://nodejs.org) 20 or newer, with npm
@@ -29,8 +29,8 @@ Gridterm isn't packaged as an app; run it from the code. It works on macOS and L
 
 **Then:**
 ```bash
-git clone https://github.com/aiah123/gridterm.git
-cd gridterm
+git clone https://github.com/aiah123/grid-shell.git
+cd grid-shell
 npm install
 npm start
 ```
@@ -75,12 +75,12 @@ Mouse:
 History, tab completion and the rest come from your own shell.
 
 ## Sessions are kept between launches
-When you quit, Gridterm saves each session's name, folder and Context panel, plus the window's size and position. They come back the next time you open Gridterm. Running programs can't be restored, so each session starts a fresh shell in its saved folder. If that folder no longer exists, the session starts in your home folder.
+When you quit, Grid Shell saves each session's name, folder and Context panel, plus the window's size and position. They come back the next time you open Grid Shell. Running programs can't be restored, so each session starts a fresh shell in its saved folder. If that folder no longer exists, the session starts in your home folder.
 
-If a command is still running when you quit, Gridterm asks first. Exiting the last shell closes the window and starts fresh next time. You can turn both off under Settings → Terminal → Startup and quit.
+If a command is still running when you quit, Grid Shell asks first. Exiting the last shell closes the window and starts fresh next time. You can turn both off under Settings → Terminal → Startup and quit.
 
 ## Settings
-Settings live in `~/.config/gridterm/config.toml`. Changes apply as soon as you save the file. You can also use the settings screen (Cmd+, / Ctrl+Shift+,) to:
+Settings live in `~/.config/grid-shell/config.toml`. Changes apply as soon as you save the file. You can also use the settings screen (Cmd+, / Ctrl+Shift+,) to:
 - pick from 9 built-in themes, or import iTerm2 themes
 - set the font, cursor, opacity and spacing
 - set scrollback, copy on select and the bell
@@ -102,4 +102,4 @@ In focus mode, the panel next to the session shows:
   - **×:** removes it from the list
 - **Recent commands** with their exit status. Click one to type it into the terminal again.
 
-This needs Gridterm's shell integration, which loads automatically for zsh and bash. Your own startup files still load first. See [resources/shell-integration](resources/shell-integration/README.md). Other shells still work, but only *detected* files are listed for them.
+This needs Grid Shell's shell integration, which loads automatically for zsh and bash. Your own startup files still load first. See [resources/shell-integration](resources/shell-integration/README.md). Other shells still work, but only *detected* files are listed for them.

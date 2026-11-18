@@ -1,4 +1,4 @@
-import { promises as fs, watch, FSWatcher, readFileSync, mkdirSync, writeFileSync, readdirSync } from 'node:fs'
+import { promises as fs, watch, FSWatcher, readFileSync, mkdirSync, writeFileSync, readdirSync, existsSync, cpSync } from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import { parse, stringify, TomlError } from 'smol-toml'
@@ -6,9 +6,9 @@ import { DEFAULTS, ResolvedConfig, resolveKeys, validateConfig, validateUpdate }
 import { defaultKeys } from '../shared/commands'
 import { BUILTIN_THEMES, completeTheme, DEFAULT_THEME, parseItermColors, ThemeColors } from '../shared/themes'
 
-const HEADER = `# Gridterm settings. Changes apply as soon as you save this file.
+const HEADER = `# Grid Shell settings. Changes apply as soon as you save this file.
 # Every setting and its default is listed in docs/config.md:
-#   https://github.com/aiah123/gridterm/blob/main/docs/config.md
+#   https://github.com/aiah123/grid-shell/blob/main/docs/config.md
 # The settings screen edits this file too. It keeps your values, but
 # rewrites the file, so comments other than this header are removed.
 `
@@ -16,13 +16,42 @@ const HEADER = `# Gridterm settings. Changes apply as soon as you save this file
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v)
 
 export function configDir(): string {
-  if (process.env.GRIDTERM_CONFIG_DIR) return process.env.GRIDTERM_CONFIG_DIR
+  if (process.env.GRID_SHELL_CONFIG_DIR) return process.env.GRID_SHELL_CONFIG_DIR
+  const base = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config')
+  return path.join(base, 'grid-shell')
+}
+
+/** Settings folder from before the project was renamed (none when GRID_SHELL_CONFIG_DIR is set). */
+export function legacyConfigDir(): string | null {
+  if (process.env.GRID_SHELL_CONFIG_DIR) return null
   const base = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config')
   return path.join(base, 'gridterm')
 }
 
+/** Our own files; the old folder can also hold Electron's caches, which stay behind. */
+const MIGRATED_ENTRIES = ['config.toml', 'state.json', 'themes']
+
 /**
- * Loads ~/.config/gridterm/config.toml (plus themes/*.json), validates it,
+ * One-time copy of settings, saved sessions and themes from the old folder.
+ * Does nothing if the new folder already has any of them. The old folder is
+ * left in place. Returns the names copied.
+ */
+export function migrateLegacyConfig(from: string | null, to: string): string[] {
+  if (!from || path.resolve(from) === path.resolve(to) || !existsSync(from)) return []
+  if (MIGRATED_ENTRIES.some((name) => existsSync(path.join(to, name)))) return []
+  const copied: string[] = []
+  for (const name of MIGRATED_ENTRIES) {
+    const src = path.join(from, name)
+    if (!existsSync(src)) continue
+    mkdirSync(to, { recursive: true, mode: 0o700 })
+    cpSync(src, path.join(to, name), { recursive: true, preserveTimestamps: true })
+    copied.push(name)
+  }
+  return copied
+}
+
+/**
+ * Loads ~/.config/grid-shell/config.toml (plus themes/*.json), validates it,
  * watches for edits and writes changes made in the settings screen.
  */
 export class ConfigService {
@@ -45,6 +74,12 @@ export class ConfigService {
 
   /** Load synchronously at startup so the first window already has the right settings. */
   init(): ResolvedConfig {
+    try {
+      const copied = migrateLegacyConfig(legacyConfigDir(), this.dir)
+      if (copied.length) console.log(`grid-shell: copied ${copied.join(', ')} from ${legacyConfigDir()} to ${this.dir}`)
+    } catch (e) {
+      console.warn(`grid-shell: could not copy settings from the old folder: ${(e as Error).message}`)
+    }
     try {
       readFileSync(this.file)
     } catch {

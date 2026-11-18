@@ -19,6 +19,12 @@ export interface Config {
   themes: Record<string, Record<string, string>>
 }
 
+/** Built-in theme names from before the rename to Grid Shell. */
+export const RENAMED_THEMES: Record<string, string> = {
+  'Gridterm Dark': 'Grid Shell Dark',
+  'Gridterm Light': 'Grid Shell Light'
+}
+
 export const DEFAULT_FONT = 'Menlo, "SF Mono", "DejaVu Sans Mono", "Liberation Mono", monospace'
 
 export const DEFAULTS: Config = {
@@ -109,6 +115,9 @@ export function validateConfig(raw: unknown, platform: string, themeNames: strin
   }
 
   const allThemes = new Set([...themeNames, ...Object.keys(config.themes)])
+  // Built-in themes were renamed with the project; keep old configs working.
+  const renamed = RENAMED_THEMES[config.theme]
+  if (!allThemes.has(config.theme) && renamed && allThemes.has(renamed)) config.theme = renamed
   if (!allThemes.has(config.theme)) {
     warnings.push(`theme "${config.theme}" not found; using "${DEFAULT_THEME}". Available: ${[...allThemes].join(', ')}.`)
     config.theme = DEFAULT_THEME

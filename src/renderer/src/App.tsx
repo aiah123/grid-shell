@@ -57,8 +57,8 @@ export function App() {
       if (next.warnings.length) showToast({ id: 'config', title: 'Problems in config.toml', items: next.warnings })
       else dismissToast('config')
     }
-    window.gridterm.getConfig().then(apply)
-    return window.gridterm.onConfig(apply)
+    window.gridShell.getConfig().then(apply)
+    return window.gridShell.onConfig(apply)
   }, [showToast, dismissToast])
 
   // Theme and spacing as CSS variables.
@@ -89,7 +89,7 @@ export function App() {
   const newSession = useCallback(async () => {
     let info
     try {
-      info = await window.gridterm.createSession()
+      info = await window.gridShell.createSession()
     } catch (e) {
       return shellFailed(e)
     }
@@ -101,12 +101,12 @@ export function App() {
 
   /** Reopen the sessions saved at the last quit, in order, with their names. */
   const restoreSessions = useCallback(async (): Promise<boolean> => {
-    const saved = await window.gridterm.getRestore()
+    const saved = await window.gridShell.getRestore()
     if (!saved) return false
     const created: Session[] = []
     for (let i = 0; i < saved.sessions.length; i++) {
       try {
-        const info = await window.gridterm.createSession({ restoreIndex: i })
+        const info = await window.gridShell.createSession({ restoreIndex: i })
         created.push({ id: info.id, name: saved.sessions[i].name })
       } catch (e) {
         shellFailed(e)
@@ -138,7 +138,7 @@ export function App() {
 
   // Report names/order/active so the main process can save them for next time.
   useEffect(() => {
-    if (started.current) window.gridterm.reportLayout(sessions, activeId)
+    if (started.current) window.gridShell.reportLayout(sessions, activeId)
   }, [sessions, activeId])
 
   useEffect(() => {
@@ -148,13 +148,13 @@ export function App() {
       if (cmd === 'copy') {
         if (editingText()) return void document.execCommand('copy')
         const term = active != null ? terminals.get(active) : undefined
-        if (term?.hasSelection()) window.gridterm.copyText(term.getSelection())
+        if (term?.hasSelection()) window.gridShell.copyText(term.getSelection())
         return
       }
       if (cmd === 'paste') {
-        if (editingText()) return window.gridterm.pasteNative()
+        if (editingText()) return window.gridShell.pasteNative()
         const term = active != null ? terminals.get(active) : undefined
-        const text = await window.gridterm.readClipboard()
+        const text = await window.gridShell.readClipboard()
         if (term && text) term.paste(text)
         return
       }
@@ -163,7 +163,7 @@ export function App() {
       if (cmd === 'new-session') return void newSession()
       const idx = list.findIndex((s) => s.id === active)
       if (active == null || idx === -1) return
-      if (cmd === 'close-session') return window.gridterm.kill(active)
+      if (cmd === 'close-session') return window.gridShell.kill(active)
       if (cmd === 'rename-session') return setRenamingId(active)
       if (cmd === 'toggle-focus') return setFocusedId(focused == null ? active : null)
       if (cmd === 'find') return setFindingId(active)
@@ -188,7 +188,7 @@ export function App() {
       if (focused != null) setFocusedId(id)
     }
 
-    const offExit = window.gridterm.onExit((id) => {
+    const offExit = window.gridShell.onExit((id) => {
       const { sessions: prev, activeId: active, focusedId: focused } = state.current
       const idx = prev.findIndex((s) => s.id === id)
       if (idx === -1) return
@@ -199,13 +199,13 @@ export function App() {
       setFindingId((f) => (f === id ? null : f))
       if (next.length === 0) {
         // Last shell exited: nothing to restore next time.
-        window.gridterm.reportLayout([], null)
-        window.gridterm.closeWindow()
+        window.gridShell.reportLayout([], null)
+        window.gridShell.closeWindow()
       }
       else if (active === id) setActiveId(next[Math.min(idx, next.length - 1)].id)
     })
-    const offCmd = window.gridterm.onCommand((cmd) => void handleCommand(cmd))
-    const offCtx = window.gridterm.onContext((id, ctx) => setContexts((c) => ({ ...c, [id]: ctx })))
+    const offCmd = window.gridShell.onCommand((cmd) => void handleCommand(cmd))
+    const offCtx = window.gridShell.onContext((id, ctx) => setContexts((c) => ({ ...c, [id]: ctx })))
     return () => {
       offExit()
       offCmd()

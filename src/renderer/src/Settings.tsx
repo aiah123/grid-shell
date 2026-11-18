@@ -34,7 +34,7 @@ export function Settings({ rc, onClose, onError }: Props) {
   }, [recording, onClose])
 
   const set = (path: string[], value: unknown) => {
-    window.gridterm.updateConfig(path, value).catch((e: Error) => onError(e.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '')))
+    window.gridShell.updateConfig(path, value).catch((e: Error) => onError(e.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '')))
   }
   /** Validate locally with the same rules as the config file before saving. */
   const setChecked = (section: string, field: string, value: unknown): boolean => {
@@ -90,7 +90,7 @@ export function Settings({ rc, onClose, onError }: Props) {
                   <button
                     className="btn"
                     onClick={() =>
-                      window.gridterm.importTheme().then(
+                      window.gridShell.importTheme().then(
                         (name) => name && set(['theme'], name),
                         (e: Error) => onError(e.message)
                       )
@@ -98,7 +98,7 @@ export function Settings({ rc, onClose, onError }: Props) {
                   >
                     Import theme…
                   </button>
-                  <span className="muted">iTerm2 .itermcolors or Gridterm .json</span>
+                  <span className="muted">iTerm2 .itermcolors or Grid Shell .json</span>
                 </div>
               </div>
 
@@ -197,7 +197,7 @@ export function Settings({ rc, onClose, onError }: Props) {
                 id="record-commands"
                 checked={config.app.recordCommands}
                 onChange={(v) => set(['app', 'recordCommands'], v)}
-                hint="Show recent commands and save them between launches. Turning this off clears recorded commands from Gridterm's current state."
+                hint="Show recent commands and save them between launches. Turning this off clears recorded commands from Grid Shell's current state."
               />
               <h3>Startup and quit</h3>
               <CheckRow
@@ -225,7 +225,7 @@ export function Settings({ rc, onClose, onError }: Props) {
         <div className="settings-footer">
           <span title={rc.configPath}>Saved to {rc.configPath}</span>
           <span className="spacer" />
-          <button className="btn" onClick={() => window.gridterm.openConfigFile()}>
+          <button className="btn" onClick={() => window.gridShell.openConfigFile()}>
             Open config file
           </button>
         </div>
@@ -333,7 +333,7 @@ function ShortcutTable(props: {
   // While recording, app shortcuts are paused so the keys reach this screen.
   useEffect(() => {
     if (!recording) return
-    window.gridterm.suspendShortcuts(true)
+    window.gridShell.suspendShortcuts(true)
     const onKey = (e: KeyboardEvent) => {
       e.preventDefault()
       e.stopPropagation()
@@ -353,7 +353,7 @@ function ShortcutTable(props: {
     window.addEventListener('keydown', onKey, true)
     return () => {
       window.removeEventListener('keydown', onKey, true)
-      window.gridterm.suspendShortcuts(false)
+      window.gridShell.suspendShortcuts(false)
     }
   }, [recording, rc, setRecording, set])
 

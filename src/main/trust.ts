@@ -1,5 +1,5 @@
 /**
- * Is `url` Gridterm's own page? `expected` is the renderer URL: the dev
+ * Is `url` Grid Shell's own page? `expected` is the renderer URL: the dev
  * server origin (http://localhost:…/) or the built index.html (file://…).
  * Query strings and #hashes are ignored; anything else must match.
  */

@@ -16,9 +16,9 @@ try {
     const mode = fs.statSync(file).mode;
     if ((mode & 0o111) !== 0o111) {
       fs.chmodSync(file, mode | 0o755);
-      console.log(`gridterm: made ${path.relative(process.cwd(), file)} executable`);
+      console.log(`grid-shell: made ${path.relative(process.cwd(), file)} executable`);
     }
   }
 } catch (e) {
-  console.warn(`gridterm: could not check node-pty's spawn-helper: ${e.message}`);
+  console.warn(`grid-shell: could not check node-pty's spawn-helper: ${e.message}`);
 }

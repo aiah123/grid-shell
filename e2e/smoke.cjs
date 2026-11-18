@@ -8,7 +8,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + name); if 
 (async () => {
   const dir = path.resolve(__dirname, '..');
   const app = await _electron.launch({ args: [dir + '/out/main/index.js', '--no-sandbox'], cwd: dir, executablePath: require(path.join(dir, 'node_modules/electron')),
-    env: { ...process.env, GRIDTERM_CONFIG_DIR: prepareConfigDir() } });
+    env: { ...process.env, GRID_SHELL_CONFIG_DIR: prepareConfigDir() } });
   const w = await app.firstWindow();
   const cmd = (c) => app.evaluate(({ BrowserWindow }, c) => BrowserWindow.getAllWindows()[0].webContents.send('app:command', c), c);
   const key = async (accel) => {

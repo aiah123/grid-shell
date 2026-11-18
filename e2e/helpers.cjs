@@ -65,7 +65,7 @@ async function waitForShell(w, timeout = 30000) {
 async function screenText(w, tileSelector = '.tile.active') {
   return w.evaluate((sel) => {
     const tile = document.querySelector(sel);
-    const term = tile && window.__gridtermTerminals?.get(Number(tile.dataset.sessionId));
+    const term = tile && window.__gridShellTerminals?.get(Number(tile.dataset.sessionId));
     if (!term) return '';
     // Join rows that the terminal wrapped, so each entry is one logical line.
     const buf = term.buffer.active;

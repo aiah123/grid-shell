@@ -86,7 +86,7 @@ export function SessionTile(props: Props) {
     // Links open with Cmd+click (macOS) or Ctrl+click, so plain clicks still select text.
     term.loadAddon(
       new WebLinksAddon((event, uri) => {
-        if (window.gridterm.platform === 'darwin' ? event.metaKey : event.ctrlKey) window.gridterm.openLink(uri)
+        if (window.gridShell.platform === 'darwin' ? event.metaKey : event.ctrlKey) window.gridShell.openLink(uri)
       })
     )
     term.open(host)
@@ -113,14 +113,14 @@ export function SessionTile(props: Props) {
     // any message whose nonce doesn't match (i.e. forged by program output).
     const osc = term.parser.registerOscHandler(7770, (data) => {
       const msg = parseIntegrationMessage(data)
-      if (msg) window.gridterm.contextEvent(id, msg.kind, msg.nonce, msg.payload)
+      if (msg) window.gridShell.contextEvent(id, msg.kind, msg.nonce, msg.payload)
       return true
     })
 
-    const offData = window.gridterm.onData(id, (d) => term.write(d))
-    const input = term.onData((d) => window.gridterm.write(id, d))
+    const offData = window.gridShell.onData(id, (d) => term.write(d))
+    const input = term.onData((d) => window.gridShell.write(id, d))
     const selection = term.onSelectionChange(() => {
-      if (settingsRef.current.copyOnSelect && term.hasSelection()) window.gridterm.copyText(term.getSelection())
+      if (settingsRef.current.copyOnSelect && term.hasSelection()) window.gridShell.copyText(term.getSelection())
     })
     let bellTimer: ReturnType<typeof setTimeout> | undefined
     const bell = term.onBell(() => {
@@ -138,7 +138,7 @@ export function SessionTile(props: Props) {
     const doFit = () => {
       if (host.clientWidth === 0 || host.clientHeight === 0) return
       fit.fit()
-      window.gridterm.resize(id, term.cols, term.rows)
+      window.gridShell.resize(id, term.cols, term.rows)
     }
     fitRef.current = doFit
     doFit()

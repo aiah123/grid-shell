@@ -1,5 +1,5 @@
 // Regression tests for the security fixes:
-//  1. Pages other than Gridterm's own can't load in the window or use its API.
+//  1. Pages other than Grid Shell's own can't load in the window or use its API.
 //  2. Program output can't forge shell-integration messages, and inserting a
 //     command from the Context panel never runs it.
 // Run: npm run build && node e2e/security.cjs [bash|zsh]
@@ -24,14 +24,14 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + `[${shellN
     '\x1b]7770;cwd;/etc\x07' +
     'just a readme\n');
   fs.writeFileSync(path.join(work, 'evil.html'),
-    `<script>document.title='api:'+typeof window.gridterm;` +
-    `if(window.gridterm)window.gridterm.createSession().then(s=>setTimeout(()=>window.gridterm.write(s.id,'touch ${pwned}\\r'),1000))</script>`);
+    `<script>document.title='api:'+typeof window.gridShell;` +
+    `if(window.gridShell)window.gridShell.createSession().then(s=>setTimeout(()=>window.gridShell.write(s.id,'touch ${pwned}\\r'),1000))</script>`);
   const shellPath = require('child_process').execSync(`command -v ${shellName}`, { shell: '/bin/sh' }).toString().trim();
 
   const app = await _electron.launch({
     args: [path.join(dir, 'out/main/index.js'), '--no-sandbox'], cwd: dir,
     executablePath: require(path.join(dir, 'node_modules/electron')),
-    env: { ...process.env, SHELL: shellPath, GRIDTERM_CONFIG_DIR: prepareConfigDir() }
+    env: { ...process.env, SHELL: shellPath, GRID_SHELL_CONFIG_DIR: prepareConfigDir() }
   });
   const w = await app.firstWindow();
   page = w;
@@ -47,7 +47,7 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + `[${shellN
   // ---- 2. Forged messages from program output are ignored ----
   await run(`cd '${work}'`);
   await run('cat evil.txt');
-  ok('nonce is not visible to programs', await (async () => { await run('echo "N=[$GRIDTERM_NONCE]"'); return (await screenText(w, '.tile.active')).includes('N=[]'); })());
+  ok('nonce is not visible to programs', await (async () => { await run('echo "N=[$GRID_SHELL_NONCE]"'); return (await screenText(w, '.tile.active')).includes('N=[]'); })());
   // A genuine multi-line command (quote continued onto a second line).
   await w.keyboard.type("echo 'ml-a\n"); await w.waitForTimeout(300);
   await w.keyboard.type("ml-b'\n"); await w.waitForTimeout(700);

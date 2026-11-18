@@ -1,5 +1,5 @@
 // Shell-integration test without the app: drives bash and zsh in a PTY with
-// Gridterm's scripts and checks the messages they send.
+// Grid Shell's scripts and checks the messages they send.
 // Run: node e2e/shell.cjs
 const pty = require('node-pty');
 const fs = require('fs');
@@ -19,11 +19,11 @@ const has = (cmd) => { try { return execSync(`command -v ${cmd}`, { shell: '/bin
 /** Run `lines` in a shell with integration; returns { messages, output }. */
 function runShell(shell, home, lines) {
   return new Promise((resolve) => {
-    const env = { ...process.env, HOME: home, TERM: 'xterm-256color', GRIDTERM_NONCE: NONCE, HISTFILE: path.join(home, '.hist') };
-    delete env.ZDOTDIR; delete env.GRIDTERM_USER_ZDOTDIR; delete env.PROMPT_COMMAND; delete env.BASH_ENV;
+    const env = { ...process.env, HOME: home, TERM: 'xterm-256color', GRID_SHELL_NONCE: NONCE, HISTFILE: path.join(home, '.hist') };
+    delete env.ZDOTDIR; delete env.GRID_SHELL_USER_ZDOTDIR; delete env.PROMPT_COMMAND; delete env.BASH_ENV;
     let args;
     if (path.basename(shell) === 'zsh') { env.ZDOTDIR = path.join(INTEGRATION, 'zsh'); args = ['-l']; }
-    else { env.GRIDTERM_BASH_LOGIN = '1'; args = ['--rcfile', path.join(INTEGRATION, 'bash', 'gridterm.bash'), '-i']; }
+    else { env.GRID_SHELL_BASH_LOGIN = '1'; args = ['--rcfile', path.join(INTEGRATION, 'bash', 'grid-shell.bash'), '-i']; }
     const p = pty.spawn(shell, args, { cols: 120, rows: 30, cwd: home, env });
     let out = '';
     let prompts = 0;
@@ -55,10 +55,10 @@ function home(files = {}) {
     if (!shell) { console.log(`INFO ${shellName} not installed; skipped`); continue; }
     const rc = shellName === 'zsh' ? { '.zshrc': 'alias hi="echo from-user-rc"\n' } : { '.bashrc': 'alias hi="echo from-user-rc"\n', '.profile': '. ~/.bashrc\n' };
     const h = home(rc);
-    const { messages, output } = await runShell(shell, h, ['', 'hi', '', 'false', 'echo "N=[$GRIDTERM_NONCE]"', 'cd /', 'exit']);
+    const { messages, output } = await runShell(shell, h, ['', 'hi', '', 'false', 'echo "N=[$GRID_SHELL_NONCE]"', 'cd /', 'exit']);
     const cmds = messages.filter((m) => m.kind === 'cmd').map((m) => m.payload);
     const dones = messages.filter((m) => m.kind === 'done').map((m) => m.payload);
-    ok(`[${shellName}] records exactly the commands typed`, JSON.stringify(cmds) === JSON.stringify(['hi', 'false', 'echo "N=[$GRIDTERM_NONCE]"', 'cd /', 'exit']), cmds);
+    ok(`[${shellName}] records exactly the commands typed`, JSON.stringify(cmds) === JSON.stringify(['hi', 'false', 'echo "N=[$GRID_SHELL_NONCE]"', 'cd /', 'exit']), cmds);
     ok(`[${shellName}] reports exit codes`, JSON.stringify(dones) === JSON.stringify(['0', '1', '0', '0']), dones);
     ok(`[${shellName}] reports the directory`, messages.some((m) => m.kind === 'cwd' && m.payload === h) && messages.some((m) => m.kind === 'cwd' && m.payload === '/'));
     ok(`[${shellName}] every message carries the nonce`, messages.length > 0 && messages.every((m) => m.nonce === NONCE));

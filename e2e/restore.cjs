@@ -19,7 +19,7 @@ async function launch() {
   const app = await _electron.launch({
     args: [path.join(dir, 'out/main/index.js'), '--no-sandbox'], cwd: dir,
     executablePath: require(path.join(dir, 'node_modules/electron')),
-    env: { ...process.env, GRIDTERM_CONFIG_DIR: cfgDir, SHELL: '/bin/bash' }
+    env: { ...process.env, GRID_SHELL_CONFIG_DIR: cfgDir, SHELL: '/bin/bash' }
   });
   const w = await app.firstWindow();
   page = w;
@@ -89,7 +89,7 @@ async function closeWith(app, answer) {
   await w.waitForSelector('.preview .line');
   ok('preview is syntax highlighted', (await w.$$('.preview .hljs-keyword')).length > 0 && (await w.$$('.preview .hljs-comment')).length > 0);
   const kwColor = await w.$eval('.preview .hljs-keyword', e => getComputedStyle(e).color);
-  ok('highlight uses theme colours', kwColor === 'rgb(188, 63, 188)'); // Gridterm Dark magenta #bc3fbc
+  ok('highlight uses theme colours', kwColor === 'rgb(188, 63, 188)'); // Grid Shell Dark magenta #bc3fbc
   if (S) await w.screenshot({ path: `${S}/preview-highlight.png` });
   await w.keyboard.press('Escape');
   await w.mouse.click(5, 5); // exit focus mode

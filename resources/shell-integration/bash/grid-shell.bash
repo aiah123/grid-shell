@@ -1,14 +1,14 @@
-# Gridterm bash integration. Loaded with: bash --rcfile <this file> -i
+# Grid Shell bash integration. Loaded with: bash --rcfile <this file> -i
 
-# 0. Keep Gridterm's per-session secret in a private (unexported) variable, and
+# 0. Keep Grid Shell's per-session secret in a private (unexported) variable, and
 #    remove it from the environment before anything else runs, so programs
 #    started from this shell can't read it and forge messages.
-__gt_nonce=${GRIDTERM_NONCE-}
-unset GRIDTERM_NONCE
+__gt_nonce=${GRID_SHELL_NONCE-}
+unset GRID_SHELL_NONCE
 
 # 1. Load the user's startup files, the way bash normally would.
-if [ -n "$GRIDTERM_BASH_LOGIN" ]; then
-  unset GRIDTERM_BASH_LOGIN
+if [ -n "$GRID_SHELL_BASH_LOGIN" ]; then
+  unset GRID_SHELL_BASH_LOGIN
   [ -r /etc/profile ] && . /etc/profile
   if [ -r "$HOME/.bash_profile" ]; then . "$HOME/.bash_profile"
   elif [ -r "$HOME/.bash_login" ]; then . "$HOME/.bash_login"

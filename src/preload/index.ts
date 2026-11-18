@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { AppCommand, GridtermApi, SessionContext } from '../shared/api'
+import type { AppCommand, GridShellApi, SessionContext } from '../shared/api'
 import type { ResolvedConfig } from '../shared/config'
 
 // Output can arrive before the tile has mounted and subscribed (e.g. the first
@@ -13,7 +13,7 @@ ipcRenderer.on('pty:data', (_e, id: number, data: string) => {
   else pending.set(id, (pending.get(id) ?? '') + data)
 })
 
-const api: GridtermApi = {
+const api: GridShellApi = {
   platform: process.platform,
   createSession: (opts) => ipcRenderer.invoke('pty:create', opts ?? {}),
   write: (id, data) => ipcRenderer.send('pty:write', id, data),
@@ -72,4 +72,4 @@ const api: GridtermApi = {
   pasteNative: () => ipcRenderer.send('edit:paste-native')
 }
 
-contextBridge.exposeInMainWorld('gridterm', api)
+contextBridge.exposeInMainWorld('gridShell', api)

@@ -94,3 +94,10 @@ describe('validateUpdate', () => {
     expect(validateUpdate(['theme'], 5, 'linux')).not.toBeNull()
   })
 })
+
+describe('renamed themes', () => {
+  it('maps pre-rename built-in theme names', () => {
+    expect(v({ theme: 'Gridterm Light' })).toEqual({ config: { ...DEFAULTS, theme: 'Grid Shell Light' }, warnings: [] })
+    expect(v({ theme: 'Gridterm Dark' }).config.theme).toBe('Grid Shell Dark')
+  })
+})

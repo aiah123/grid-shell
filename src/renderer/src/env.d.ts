@@ -1,7 +1,7 @@
-import type { GridtermApi } from '../../shared/api'
+import type { GridShellApi } from '../../shared/api'
 
 declare global {
   interface Window {
-    gridterm: GridtermApi
+    gridShell: GridShellApi
   }
 }

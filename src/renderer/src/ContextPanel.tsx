@@ -66,10 +66,10 @@ export function ContextPanel({ session, context, onPreview, onInsert }: Props) {
                     <button title="Type an editor command into the terminal" onClick={() => onInsert(`\${EDITOR:-vi} ${shellQuote(f.path)}`)}>
                       Edit
                     </button>
-                    <button title="Show in file manager" onClick={() => window.gridterm.revealFile(f.path)}>
+                    <button title="Show in file manager" onClick={() => window.gridShell.revealFile(f.path)}>
                       Reveal
                     </button>
-                    <button title="Remove from list" aria-label="Remove" onClick={() => window.gridterm.removeFile(session.id, f.path)}>
+                    <button title="Remove from list" aria-label="Remove" onClick={() => window.gridShell.removeFile(session.id, f.path)}>
                       ×
                     </button>
                   </span>

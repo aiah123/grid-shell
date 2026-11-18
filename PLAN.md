@@ -1,4 +1,4 @@
-# Gridterm plan
+# Grid Shell plan
 
 **Platforms:** macOS and Linux.
 **Stack:** Electron, TypeScript, Vite, React, xterm.js (WebGL renderer), node-pty.
@@ -14,7 +14,7 @@
 
   Click a file to preview it, or open it in `$EDITOR`.
 - **Terminal basics:** history and tab completion come from your shell. xterm.js provides copy/paste, scrollback, search, clickable links, mouse support and the bell.
-- **Config:** `~/.config/gridterm/config.toml` (themes, fonts, cursor, opacity, padding, shortcuts) with live reload, plus a settings screen.
+- **Config:** `~/.config/grid-shell/config.toml` (themes, fonts, cursor, opacity, padding, shortcuts) with live reload, plus a settings screen.
 - **Persistence:** session names, directories, order and context are restored on launch. Running processes are not.
 
 ## Milestones
@@ -28,10 +28,10 @@
 | M5 ✅ | Context panel and file preview |
 | M6 ✅ | Config file, themes, settings screen, remappable shortcuts |
 | M7 ✅ | Save and restore sessions; quit confirmation, find, links, syntax highlighting, WebGL cap |
-| M8 — skipped | Packaging (`.dmg`, AppImage/deb). Not planned for now: people run Gridterm from source (see README). |
+| M8 — skipped | Packaging (`.dmg`, AppImage/deb). Not planned for now: people run Grid Shell from source (see README). |
 
 ## Security fixes (from the security review)
-- **Foreign pages could use Gridterm's API.** Navigation away from the app page is now blocked: links, location changes, dropped files, redirects and iframes. New windows are denied. Every internal message is accepted only from Gridterm's own page.
+- **Foreign pages could use Grid Shell's API.** Navigation away from the app page is now blocked: links, location changes, dropped files, redirects and iframes. New windows are denied. Every internal message is accepted only from Grid Shell's own page.
 - **Terminal output could forge shell-integration messages.** Each session gets a random secret that only its shell scripts know; they unset it before your startup files run. Messages without it are ignored, so `cat`, `curl` or `ssh` output can't fake commands, folders or files. Inserting a command or path from the Context panel now always inserts one line without control characters, as a paste, so it can't run anything by itself.
 - **Settings updates** accept only known setting names and valid values, so a name like `__proto__` is rejected.
 - **Internal messages** are checked against a per-channel type and size table (`src/main/ipcSchema.ts`). A channel without an entry fails at startup.
@@ -39,10 +39,10 @@
 - **CI** (GitHub Actions) runs the audit and all tests on Linux and macOS.
 
 ## Known issues found while building
-- In bash, pressing Enter on an empty line recorded Gridterm's own prompt hook as a command. That's fixed.
+- In bash, pressing Enter on an empty line recorded Grid Shell's own prompt hook as a command. That's fixed.
 - `cd dir && vim file` now records `dir/file`. The command parser follows `cd` within a line.
 - Copy/paste originally went through the browser's own copy command, which can't see the terminal's selection. It now uses the terminal's selection. The Linux Edit menu also no longer claims Ctrl+A/X/Z, which belong to the shell.
-- On Linux, node-pty leaks Electron's open file handles into the shell. Gridterm now starts the shell through a small bash launcher that closes them first; the process ID stays the same. macOS is not affected.
+- On Linux, node-pty leaks Electron's open file handles into the shell. Grid Shell now starts the shell through a small bash launcher that closes them first; the process ID stays the same. macOS is not affected.
 
 ## Risks
 - Shortcut conflicts: app shortcuts always use modifier combinations and can be remapped.

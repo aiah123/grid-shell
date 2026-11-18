@@ -10,7 +10,7 @@ export function FilePreview({ path, onClose }: { path: string; onClose(): void }
   useEffect(() => {
     let live = true
     setResult(null)
-    window.gridterm.readFile(path).then((r) => live && setResult(r))
+    window.gridShell.readFile(path).then((r) => live && setResult(r))
     ref.current?.focus()
     return () => {
       live = false

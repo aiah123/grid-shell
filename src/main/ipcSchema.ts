@@ -1,6 +1,6 @@
 /**
  * Runtime argument checks for every IPC channel. Messages already come only
- * from Gridterm's own page (see fromApp in index.ts); this is defence in
+ * from Grid Shell's own page (see fromApp in index.ts); this is defence in
  * depth so a renderer bug can't hand the main process unexpected types or
  * unbounded sizes.
  */

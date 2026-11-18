@@ -4,4 +4,4 @@ import type { Terminal } from '@xterm/xterm'
 export const terminals = new Map<number, Terminal>()
 
 // Exposed for end-to-end tests and debugging from devtools.
-;(window as unknown as { __gridtermTerminals: typeof terminals }).__gridtermTerminals = terminals
+;(window as unknown as { __gridShellTerminals: typeof terminals }).__gridShellTerminals = terminals
