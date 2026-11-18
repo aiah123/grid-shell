@@ -47,7 +47,7 @@ npm run typecheck
 npm run build && npm run test:e2e:all   # all end-to-end suites (use xvfb-run -a on headless Linux)
 ```
 
-CI runs `npm audit`, the type check, the unit tests and every end-to-end suite on Linux and macOS for each push and pull request.
+CI runs on Linux and macOS for each push and pull request: a dependency audit (it fails on high or critical issues in what ships in the app, and only warns about build and test tools), the type check, the unit tests and every end-to-end suite.
 
 ## Shortcuts
 | Action | macOS | Linux |

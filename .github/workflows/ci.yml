@@ -42,7 +42,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit dependencies (fails on high or critical)
+      # What ships in the app must be clean: fail on high or critical.
+      - name: Audit app dependencies (fails on high or critical)
+        run: npm audit --omit=dev --audit-level=high
+
+      # Build/test tools only run on developer and CI machines. Report their
+      # advisories without failing, since fixes often wait on upstream releases.
+      - name: Audit development tools (warning only)
+        continue-on-error: true
         run: npm audit --audit-level=high
 
       - name: Typecheck
