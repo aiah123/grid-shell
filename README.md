@@ -11,7 +11,7 @@ Double-click a session (or press Cmd+Enter / Ctrl+Shift+Enter) to focus on it. I
 ![Focus mode: a Claude Code session enlarged, with its Context panel](docs/screenshots/focus.png)
 
 **What it does:**
-- **Every session in view:** sessions split the window evenly. Drag the borders between them to resize; double-click a border to make them equal again.
+- **Every session in view:** sessions split the window evenly. Drag the borders between them to resize, and drag a session by its title bar onto another to swap them.
 - **Named sessions:** double-click a title bar to rename a session. Move between sessions with a click or the keyboard.
 - **Focus mode and context:** see the files opened in a session, preview them with syntax highlighting, and re-run recent commands.
 - **Your own shell:** bash, zsh or any other shell, with its history, tab completion and settings.
@@ -72,6 +72,8 @@ Mouse:
 - Click a tile to make it active. Only the active tile receives your typing.
 - Drag the border between two sessions to resize them. Each row is sized on its own; drag the border between rows to change their heights. Double-click a border to make the sizes equal again. Adding or closing a session resets the sizes.
 - Double-click a title bar to rename that session. Enter saves, Esc cancels.
+- Click the × at the right of a title bar to close that session. If a command is still running in it, Grid Shell asks first.
+- Drag a session by its title bar onto another session to swap their places. Esc cancels the drag.
 - Double-click a terminal to enter focus mode. Clicking anywhere outside the focused session exits focus mode; it doesn't change the active session.
 
 - Cmd+click (macOS) or Ctrl+click (Linux) a web link in the terminal to open it in your browser.

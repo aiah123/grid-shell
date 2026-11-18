@@ -162,6 +162,30 @@ async function confirmClose(): Promise<boolean> {
   return response === 1
 }
 
+/**
+ * Close one session (the × button or the close shortcut). If a command is
+ * still running in it, ask first, like quitting does. Returns whether it closed.
+ */
+async function closeSession(id: number): Promise<boolean> {
+  if (config.get().config.app.confirmQuit && win) {
+    const busy = (await tracker.busySessions()).find((b) => b.id === id)
+    if (busy) {
+      const name = layout.sessions.find((s) => s.id === id)?.name ?? 'this session'
+      const { response } = await dialog.showMessageBox(win, {
+        type: 'warning',
+        buttons: ['Cancel', 'Close'],
+        defaultId: 0,
+        cancelId: 0,
+        message: `Close “${name}”?`,
+        detail: `${busy.command} is still running in this session. Closing it will stop ${busy.command}.`
+      })
+      if (response !== 1) return false
+    }
+  }
+  sessions.kill(id)
+  return true
+}
+
 const MAX_PREVIEW_BYTES = 512 * 1024
 
 async function readPreview(p: string): Promise<FileReadResult> {
@@ -351,6 +375,7 @@ on('link:open', (_e, url: string) => {
 on('pty:write', (_e, id: number, data: string) => sessions.write(id, data))
 on('pty:resize', (_e, id: number, cols: number, rows: number) => sessions.resize(id, cols, rows))
 on('pty:kill', (_e, id: number) => sessions.kill(id))
+handle('pty:close', (_e, id: number) => closeSession(id))
 on('app:close-window', () => win?.close())
 on('ctx:event', (_e, id: number, kind: string, nonce: string, payload: string) => {
   // Drop anything not signed by the session's own shell integration.

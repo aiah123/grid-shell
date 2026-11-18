@@ -47,6 +47,8 @@ export interface GridShellApi {
   write(id: number, data: string): void
   resize(id: number, cols: number, rows: number): void
   kill(id: number): void
+  /** Close a session, asking first if a command is still running in it. Resolves to whether it closed. */
+  closeSession(id: number): Promise<boolean>
   /** Subscribe to PTY output; data emitted before subscribing is replayed. */
   onData(id: number, cb: (data: string) => void): () => void
   onExit(cb: (id: number, exitCode: number) => void): () => void

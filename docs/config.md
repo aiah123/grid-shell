@@ -69,7 +69,7 @@ select-9 = false              # turn a shortcut off
 | `shell.program` | `""` | Path to a shell. `""` uses `$SHELL`. Applies to new sessions. |
 | `shell.integration` | `true` | Directory, command and file tracking for zsh and bash. Applies to new sessions. |
 | `app.restoreSessions` | `true` | Reopen the last sessions (names, folders, context) and the window size on launch. Saved in `state.json` next to `config.toml`. |
-| `app.confirmQuit` | `true` | Ask before quitting while a command is running |
+| `app.confirmQuit` | `true` | Ask before quitting, or closing a session (× button or shortcut), while a command is running |
 | `app.recordCommands` | `true` | Show and persist recent commands. Turning this off clears Grid Shell's recorded commands and prevents restoring them; directory and file tracking remain available. |
 
 Grid Shell keeps `state.json` private (`0600`) inside its private configuration

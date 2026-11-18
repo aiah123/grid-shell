@@ -212,7 +212,7 @@ export function Settings({ rc, onClose, onError }: Props) {
                 id="confirm-quit"
                 checked={config.app.confirmQuit}
                 onChange={(v) => set(['app', 'confirmQuit'], v)}
-                hint="Ask before quitting while a command is still running."
+                hint="Ask before quitting, or closing a session, while a command is still running."
               />
             </>
           )}

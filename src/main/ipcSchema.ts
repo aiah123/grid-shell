@@ -32,6 +32,7 @@ export const IPC_SCHEMA: Record<string, Check[]> = {
   'pty:write': [isId, str(16 * MiB)],
   'pty:resize': [isId, int(1, 2000), int(1, 1000)],
   'pty:kill': [isId],
+  'pty:close': [isId],
   'state:get-restore': [],
   'state:layout': [arrayOf(shape({ id: isId, name: str(1000) }), 1000), nullable(isId)],
   'link:open': [str(8192)],

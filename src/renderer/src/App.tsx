@@ -3,6 +3,7 @@ import type { AppCommand, SessionContext } from '../../shared/api'
 import type { ResolvedConfig } from '../../shared/config'
 import { computeLayout, Direction, equalSizes, neighbor, shapeKey, Sizes, tileRects } from './layout'
 import { Resizers } from './Resizers'
+import { useTileDrag } from './useTileDrag'
 import { SessionTile, TileSettings } from './SessionTile'
 import { ContextPanel } from './ContextPanel'
 import { FilePreview } from './FilePreview'
@@ -124,6 +125,18 @@ export function App() {
     return true
   }, [shellFailed])
 
+  // Drag a session's title bar onto another to swap their places in the grid.
+  const tileDrag = useTileDrag((a, b) =>
+    setSessions((list) => {
+      const i = list.findIndex((s) => s.id === a)
+      const j = list.findIndex((s) => s.id === b)
+      if (i === -1 || j === -1) return list
+      const next = [...list]
+      ;[next[i], next[j]] = [next[j], next[i]]
+      return next
+    })
+  )
+
   const rename = useCallback((id: number, name: string) => {
     const trimmed = name.trim()
     if (trimmed) setSessions((s) => s.map((x) => (x.id === id ? { ...x, name: trimmed } : x)))
@@ -167,7 +180,7 @@ export function App() {
       if (cmd === 'new-session') return void newSession()
       const idx = list.findIndex((s) => s.id === active)
       if (active == null || idx === -1) return
-      if (cmd === 'close-session') return window.gridShell.kill(active)
+      if (cmd === 'close-session') return void window.gridShell.closeSession(active)
       if (cmd === 'rename-session') return setRenamingId(active)
       if (cmd === 'toggle-focus') return setFocusedId(focused == null ? active : null)
       if (cmd === 'find') return setFindingId(active)
@@ -287,6 +300,10 @@ export function App() {
               }}
               onRename={(name) => rename(s.id, name)}
               onCancelRename={() => setRenamingId(null)}
+              onClose={() => void window.gridShell.closeSession(s.id)}
+              onTitlePointerDown={(e) => tileDrag.start(e, s.id)}
+              dragging={tileDrag.draggingId === s.id}
+              dropTarget={tileDrag.overId === s.id}
               // A focused tile is placed by CSS (fixed, enlarged); others by their size fractions.
               style={
                 s.id === focusedId

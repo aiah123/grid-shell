@@ -47,6 +47,11 @@ interface Props {
   onStartRename(): void
   onRename(name: string): void
   onCancelRename(): void
+  onClose(): void
+  /** Pointer pressed on the title bar (may become a drag to swap sessions). */
+  onTitlePointerDown(e: React.PointerEvent): void
+  dragging: boolean
+  dropTarget: boolean
   style: CSSProperties
 }
 
@@ -191,13 +196,20 @@ export function SessionTile(props: Props) {
 
   return (
     <div
-      className={`tile${active ? ' active' : ''}${focused ? ' focused' : ''}${bellFlash ? ' bell-flash' : ''}`}
+      className={`tile${active ? ' active' : ''}${focused ? ' focused' : ''}${bellFlash ? ' bell-flash' : ''}${props.dragging ? ' dragging' : ''}${props.dropTarget ? ' drop-target' : ''}`}
       style={style}
       data-session-id={id}
       data-font-size={settings.fontSize}
       onMouseDown={props.onActivate}
     >
-      <div className="title" onDoubleClick={props.onStartRename} title="Double-click to rename">
+      <div
+        className="title"
+        onDoubleClick={props.onStartRename}
+        onPointerDown={(e) => {
+          if (!focused && !renaming) props.onTitlePointerDown(e)
+        }}
+        title="Double-click to rename · drag onto another session to swap them"
+      >
         {renaming ? (
           <RenameInput initial={name} onDone={props.onRename} onCancel={props.onCancelRename} />
         ) : (
@@ -209,6 +221,19 @@ export function SessionTile(props: Props) {
             </span>
           </>
         )}
+        <button
+          className="tile-close"
+          aria-label={`Close ${name}`}
+          title="Close session"
+          onMouseDown={(e) => e.stopPropagation()}
+          onDoubleClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation()
+            props.onClose()
+          }}
+        >
+          ×
+        </button>
       </div>
       {props.finding && searchRef.current && <FindBar search={searchRef.current} accent={settings.theme.selectionBackground ?? '#264f78'} onClose={props.onCloseFind} />}
       <div

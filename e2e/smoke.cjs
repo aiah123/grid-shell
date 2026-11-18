@@ -81,5 +81,30 @@ const ok = (name, cond) => { console.log((cond ? 'PASS ' : 'FAIL ') + name); if 
   await key('Control+Shift+Enter'); ok('toggle enters', await w.$eval('.tile.focused', e => e.dataset.sessionId) === '5');
   await key('Control+Shift+Enter'); ok('toggle exits', (await w.$('.tile.focused')) === null);
   if (S) await w.screenshot({ path: S + '/grid.png' });
+
+  // × button on each title bar
+  const ids = () => w.$$eval('.tile', (els) => els.map((e) => e.dataset.sessionId));
+  const stubDialog = (answer) => app.evaluate(({ dialog }, answer) => {
+    global.__dialogs = [];
+    dialog.showMessageBox = async (_w, o) => { global.__dialogs.push(`${o.message} ${o.detail}`); return { response: answer }; };
+  }, answer);
+  const dialogs = () => app.evaluate(() => global.__dialogs);
+  ok('every tile has a close button', (await w.$$('.tile .tile-close')).length === (await ids()).length);
+  await stubDialog(0);
+  await w.click('.tile[data-session-id="2"] .tile-close'); await w.waitForTimeout(700);
+  ok('× closes an idle session without asking', !(await ids()).includes('2') && (await dialogs()).length === 0);
+  // A busy session asks first.
+  await w.click('.tile[data-session-id="3"] .term'); await w.waitForTimeout(150);
+  await w.keyboard.type('sleep 30\n'); await w.waitForTimeout(800);
+  await w.click('.tile[data-session-id="3"] .tile-close'); await w.waitForTimeout(700);
+  const asked = await dialogs();
+  ok('× on a busy session asks first', asked.length === 1 && /sleep/.test(asked[0]));
+  ok('Cancel keeps the session', (await ids()).includes('3'));
+  await stubDialog(0);
+  await key('Control+Shift+W'); await w.waitForTimeout(700);
+  ok('the close shortcut asks too', (await dialogs()).length === 1 && (await ids()).includes('3'));
+  await stubDialog(1);
+  await w.click('.tile[data-session-id="3"] .tile-close'); await w.waitForTimeout(800);
+  ok('Close stops the command and removes the session', !(await ids()).includes('3'));
   await app.close();
 })().catch(e => { console.error(e); process.exit(1); });
