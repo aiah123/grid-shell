@@ -204,7 +204,7 @@ export function SessionTile(props: Props) {
           <>
             {bellPending && <span className="bell-dot" title="Bell" data-testid="bell-dot" />}
             <span className="title-text">
-              {name}
+              <span className="session-name">{name}</span>
               {cwd && <span className="cwd"> — {cwd}</span>}
             </span>
           </>

@@ -198,6 +198,7 @@ delete demoEnv.CLAUDE_CODE_CHILD_NOTES_DIR;
   await w.screenshot({ path: path.join(outDir, 'focus.png') });
 
   await app.close();
-  fs.rmSync(home, { recursive: true, force: true });
+  // Claude Code may still be writing its files for a moment after the app closes.
+  try { fs.rmSync(home, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 }); } catch { /* leave it for the OS to clean up */ }
   console.log(`Saved ${path.relative(root, path.join(outDir, 'grid.png'))} and ${path.relative(root, path.join(outDir, 'focus.png'))}`);
 })().catch((e) => { console.error(e); process.exit(1); });
