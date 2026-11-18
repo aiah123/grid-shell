@@ -2,13 +2,13 @@
 
 [![CI](https://github.com/aiah123/grid-shell/actions/workflows/ci.yml/badge.svg)](https://github.com/aiah123/grid-shell/actions/workflows/ci.yml)
 
-Grid Shell is a terminal for macOS and Linux that keeps all your shell sessions in view at once. Sessions share the window as an even grid, so you can watch a dev server, logs and tests side by side, then step into any one of them when you need to focus.
+Grid Shell is a terminal for macOS and Linux that keeps all your shell sessions in view at once. Sessions share the window as an even grid, so you can run several Claude Code sessions, a dev server and your tests side by side, then step into any one of them when you need to focus.
 
-![Four sessions side by side in the grid](docs/screenshots/grid.png)
+![Two Claude Code sessions, a dev server and tests side by side in the grid](docs/screenshots/grid.png)
 
 Double-click a session (or press Cmd+Enter / Ctrl+Shift+Enter) to focus on it. It fills most of the window, next to a Context panel showing its folder, the files you've opened in it and its recent commands. Click anywhere outside it to go back to the grid.
 
-![Focus mode: one session enlarged, with its Context panel](docs/screenshots/focus.png)
+![Focus mode: a Claude Code session enlarged, with its Context panel](docs/screenshots/focus.png)
 
 **What it does:**
 - **Every session in view:** sessions split the window evenly. Drag the borders between them to resize; double-click a border to make them equal again.
@@ -47,7 +47,7 @@ npm run dev        # run with hot reload
 npm test           # unit tests
 npm run typecheck
 npm run build && npm run test:e2e:all   # all end-to-end suites (use xvfb-run -a on headless Linux)
-npm run build && npm run screenshots    # regenerate the README screenshots
+npm run build && npm run screenshots    # regenerate the README screenshots (needs Claude Code installed and signed in)
 ```
 
 CI runs on Linux and macOS for each push and pull request: a dependency audit (it fails on high or critical issues in what ships in the app, and only warns about build and test tools), the type check, the unit tests and every end-to-end suite.
